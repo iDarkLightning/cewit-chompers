@@ -1,10 +1,21 @@
 import { Google } from "arctic";
 import { z } from "zod";
 
+import { APP_URL } from "~/shared/constants";
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      GOOGLE_CLIENT_ID: string;
+      GOOGLE_CLIENT_SECRET: string;
+    }
+  }
+}
+
 export const googleAuth = new Google(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  "http://localhost:3000/auth/sign-in/google/callback",
+  `${APP_URL}/auth/sign-in/google/callback`,
 );
 export const googleAuthScopes = ["openid", "email", "profile"];
 

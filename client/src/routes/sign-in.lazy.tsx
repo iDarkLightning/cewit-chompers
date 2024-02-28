@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
 
 const createAuthMethodUrl = (
   provider: string,
@@ -20,20 +20,18 @@ export const Route = createLazyFileRoute("/sign-in")({
 function SignIn() {
   const searchParams = Route.useSearch();
 
-  console.log(searchParams);
-
   return (
     <div>
       Sign in
-      <a
-        href={createAuthMethodUrl(
+      <Link
+        to={createAuthMethodUrl(
           "google",
           searchParams.callback,
           searchParams.token,
         )}
       >
         Sign In
-      </a>
+      </Link>
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
+import { User } from "@prisma/client";
 import { Lucia } from "lucia";
 import { pick } from "radash";
-import { prisma } from "../db";
-import { User } from "@prisma/client";
 
-const AUTH_COOKIE_NAME = "auth-cookie";
+import { AUTH_COOKIE_NAME } from "~/shared/constants";
+import { prisma } from "../db";
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 
