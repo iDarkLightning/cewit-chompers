@@ -4,11 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "db:up": "docker compose up",
+    "db:down": "docker compose down",
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@hono/node-server": "^1.3.5",
     "@hono/trpc-server": "^0.1.0",
+    "@lucia-auth/adapter-prisma": "^4.0.0",
+    "@prisma/client": "5.10.2",
     "@tanstack/react-query": "^4.3.8",
     "@tanstack/react-router": "^1.14.5",
     "@tanstack/router-devtools": "^1.14.5",
@@ -16,7 +21,10 @@
     "@trpc/react-query": "10.10.0",
     "@trpc/server": "10.10.0",
     "@vonojs/vono": "^0.0.8",
+    "arctic": "^1.2.1",
     "hono": "^3.12.5",
+    "lucia": "^3.0.1",
+    "radash": "^12.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "superjson": "^2.2.1",
@@ -26,6 +34,7 @@
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
     "@tanstack/router-vite-plugin": "^1.14.1",
+    "@types/node": "^20.11.24",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.18",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -38,6 +47,7 @@
     "postcss": "^8.4.33",
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "prisma": "^5.10.2",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.7.0",
     "typescript": "^5.2.2",
