@@ -71,13 +71,13 @@ model Food {
 model FoodOnIngredient {
   food         Food       @relation(fields: [foodId], references: [id])
   foodId       String
-  ingredient   Ingreedent @relation(fields: [ingredientId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   ingredientId String
 
   @@id([foodId, ingredientId])
 }
 
-model Ingreedent {
+model Ingredient {
   id   String @id @default(cuid())
   name String
 
