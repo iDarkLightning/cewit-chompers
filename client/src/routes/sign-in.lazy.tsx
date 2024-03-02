@@ -1,14 +1,14 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 
+import { APP_URL } from "~/shared/constants";
+
 const createAuthMethodUrl = (
   provider: string,
   redirectPathname?: string,
   token?: string,
 ) => {
-  return `${
-    import.meta.env.VITE_PUBLIC_APP_URL
-  }/auth/sign-in/${provider}?${new URLSearchParams({
-    redirect: `${import.meta.env.VITE_PUBLIC_APP_URL}${redirectPathname || "/"}`,
+  return `${APP_URL}/auth/sign-in/${provider}?${new URLSearchParams({
+    redirect: `${APP_URL}${redirectPathname || "/"}`,
     token: token || "",
   }).toString()}`;
 };

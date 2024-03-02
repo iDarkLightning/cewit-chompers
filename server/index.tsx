@@ -11,14 +11,13 @@ const hono = new Hono();
 
 hono.route("/auth", authRouter);
 
-hono.use("/trpc/*", (ctx, next) => {
-  console.log("DWA");
-
-  return trpcServer({
+hono.use(
+  "/trpc/*",
+  trpcServer({
     router: appRouter,
     createContext: createFetchContext,
-  })(ctx, next);
-});
+  }),
+);
 
 hono.get("/*", (ctx) => {
   const html = renderToString(<ServerEntry />);

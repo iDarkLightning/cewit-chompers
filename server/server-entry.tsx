@@ -14,10 +14,6 @@ export const ServerEntry = () => {
         <link rel="icon" type="image/svg+xml" href="/vite.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Vono + TRPC + Tanstack router</title>
-      </head>
-      <body>
-        <div id="root"></div>
-        <script type="module" src="/client/src/client-entry.tsx" />
         {import.meta.env.DEV && (
           <>
             <script type="module" src="/@vite/client"></script>
@@ -27,6 +23,10 @@ export const ServerEntry = () => {
             ></script>
           </>
         )}
+      </head>
+      <body>
+        <div id="root"></div>
+        <script type="module" src="/client/src/client-entry.tsx" />
       </body>
     </html>
   );
