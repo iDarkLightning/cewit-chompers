@@ -5,20 +5,22 @@ import {
 } from "arctic";
 import { Hono } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
+import { capitalize, pick } from "radash";
 
+import { APP_URL, AUTH_COOKIE_NAME } from "~/shared/constants";
 import { prisma } from "../db";
 import { getGoogleUser, googleAuth, googleAuthScopes } from "./google";
 import { auth } from "./lucia";
 
-const AUTH_COOKIE_NAME = "auth-cookie";
-
 // utility function to get a session or invalidate it if it is invalid
 const getOrInvalidateSession = async (authCookie: string) => {
   const { session, user } = await auth.validateSession(authCookie);
+
   if (!session || !user) {
     await auth.invalidateSession(authCookie);
     return null;
   }
+
   return { session, user };
 };
 
@@ -28,21 +30,13 @@ const capitalizeSameSite = (
   if (!attribute) return undefined;
   if (typeof attribute === "boolean")
     return capitalizeSameSite(attribute ? "lax" : "none");
-  switch (attribute.toLowerCase()) {
-    case "lax":
-      return "Lax";
-    case "strict":
-      return "Strict";
-    case "none":
-      return "None";
-    default:
-      return undefined;
-  }
+
+  return capitalize(attribute) as "Lax" | "Strict" | "None";
 };
 
-export const authV0 = new Hono();
+export const authRouter = new Hono();
 
-authV0.get("/user", async (ctx) => {
+authRouter.get("/user", async (ctx) => {
   const authCookie = getCookie(ctx, AUTH_COOKIE_NAME);
   if (!authCookie) return ctx.json(null);
 
@@ -75,17 +69,17 @@ authV0.get("/user", async (ctx) => {
   );
 });
 
-authV0.get("/sign-in/google", async (ctx) => {
+authRouter.get("/sign-in/google", async (ctx) => {
   const authCookie = getCookie(ctx, AUTH_COOKIE_NAME);
-  const errorCallbackUrl =
-    ctx.req.query("error-callback") ??
-    `${process.env.VITE_PUBLIC_APP_URL}/sign-in`;
+  const errorCallback = ctx.req.query("error-callback");
 
   // if the user is already logged in, return an error
   if (authCookie) {
     const session = await getOrInvalidateSession(authCookie);
     if (session) {
-      return ctx.redirect(`${errorCallbackUrl}?error=already_logged_in`);
+      return ctx.redirect(
+        `${errorCallback ?? `${APP_URL}/sign-in`}?error=already_logged_in`,
+      );
     }
   }
 
@@ -103,14 +97,14 @@ authV0.get("/sign-in/google", async (ctx) => {
   const tokenQuery = ctx.req.query("token");
   if (tokenQuery && tokenQuery !== "")
     setCookie(ctx, "token", tokenQuery, AUTH_STATE_COOKIE_MIXIN);
-  const errorCallback = ctx.req.query("error-callback");
+
   if (errorCallback && errorCallback !== "")
     setCookie(ctx, "error-callback", errorCallback, AUTH_STATE_COOKIE_MIXIN);
 
   setCookie(
     ctx,
     "redirect",
-    ctx.req.query("redirect") || process.env.VITE_PUBLIC_APP_URL,
+    ctx.req.query("redirect") || APP_URL,
     AUTH_STATE_COOKIE_MIXIN,
   );
 
@@ -129,16 +123,17 @@ authV0.get("/sign-in/google", async (ctx) => {
   return ctx.redirect(url.toString());
 });
 
-authV0.get("/sign-in/google/callback", async (ctx) => {
-  const googleOauthStateValue = getCookie(ctx, "google-oauth-state");
-  const signInTokenValue = getCookie(ctx, "token");
-  const errorCallbackValue = getCookie(ctx, "error-callback");
-  const redirectValue = getCookie(ctx, "redirect");
-  const codeVerifierValue = getCookie(ctx, "code-verifier");
+authRouter.get("/sign-in/google/callback", async (ctx) => {
+  const cookies = pick(getCookie(ctx), [
+    "google-oauth-state",
+    "error-callback",
+    "redirect",
+    "code-verifier",
+  ]);
+
   const stateQueryParam = ctx.req.query("state");
   const codeQueryParam = ctx.req.query("code");
-  const errorCallbackUrl =
-    errorCallbackValue ?? `${process.env.VITE_PUBLIC_APP_URL}/sign-in`;
+  const errorCallbackUrl = cookies["error-callback"] ?? `${APP_URL}/sign-in`;
 
   // clean up auth state, do not use these cookies after this
   const DELETE_COOKIE = {
@@ -146,28 +141,23 @@ authV0.get("/sign-in/google/callback", async (ctx) => {
     maxAge: 0,
   };
 
-  setCookie(ctx, "token", "", DELETE_COOKIE);
-  setCookie(ctx, "error-callback", "", DELETE_COOKIE);
-  setCookie(ctx, "redirect", "", DELETE_COOKIE);
-  setCookie(ctx, "google-oauth-state", "", DELETE_COOKIE);
-  setCookie(ctx, "code-verifier", "", DELETE_COOKIE);
+  Object.keys(cookies).forEach((key) => setCookie(ctx, key, "", DELETE_COOKIE));
 
   // makes sure that the required params exist and
   // that the oauth flow matches the one started
   if (
-    !googleOauthStateValue ||
+    !cookies["google-oauth-state"] ||
     !stateQueryParam ||
     !codeQueryParam ||
-    !codeVerifierValue ||
-    googleOauthStateValue !== stateQueryParam
+    !cookies["code-verifier"] ||
+    cookies["google-oauth-state"] !== stateQueryParam
   )
     return ctx.redirect(`${errorCallbackUrl}?error=invalid_state`);
 
   try {
-    // const { getExistingUser, googleUser, createUser } =
     const tokens = await googleAuth.validateAuthorizationCode(
       codeQueryParam,
-      codeVerifierValue,
+      cookies["code-verifier"],
     );
 
     const googleUser = await getGoogleUser(tokens.accessToken);
@@ -207,7 +197,7 @@ authV0.get("/sign-in/google/callback", async (ctx) => {
       sameSite: capitalizeSameSite(sessionCookie.attributes.sameSite),
     });
 
-    return ctx.redirect(redirectValue ?? process.env.VITE_PUBLIC_APP_URL);
+    return ctx.redirect(cookies.redirect ?? process.env.VITE_PUBLIC_APP_URL);
   } catch (e) {
     // the oauth callback token provided is invalid
     if (e instanceof OAuth2RequestError) {
@@ -219,7 +209,7 @@ authV0.get("/sign-in/google/callback", async (ctx) => {
   }
 });
 
-authV0.delete("/sign-out", async (ctx) => {
+authRouter.delete("/sign-out", async (ctx) => {
   const authCookie = getCookie(ctx, AUTH_COOKIE_NAME);
   if (!authCookie) return ctx.json(null, 401);
 

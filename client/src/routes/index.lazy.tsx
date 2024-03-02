@@ -8,20 +8,18 @@ export const Route = createLazyFileRoute("/")({
 });
 
 function Index() {
-  const test = trpc.hello.useQuery();
+  const test = trpc.potatoes.useQuery();
   const me = trpc.me.useQuery();
   return (
     <div className="p-2">
       <h3>{test.data}</h3>
-
       {me.data && (
         <>
           {me.data.name}
           {me.data.email}
         </>
       )}
-
-      {me.data && <SignOutButton />}
+      {!!me.data && <SignOutButton />}
     </div>
   );
 }
