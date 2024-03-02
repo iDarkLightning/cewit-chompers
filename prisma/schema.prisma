@@ -14,12 +14,15 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String
-  email         String
-  image         String
-  sessions      Session[]
-  oauthAccounts OauthAccount[]
+  id               String         @id @default(cuid())
+  name             String
+  email            String
+  image            String
+  sessions         Session[]
+  oauthAccounts    OauthAccount[]
+  ownedRestaurants Restaurant[]
+
+  dietaryRestrictions Food[]
 }
 
 model Session {
@@ -36,4 +39,49 @@ model OauthAccount {
   user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([providerName, providerUserId])
+}
+
+model Restaurant {
+  id      String @id @default(cuid())
+  name    String
+  slug    String @unique
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+  menu    Food[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Food {
+  id   String @id @default(cuid())
+  name String
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+
+  ingridients FoodOnIngridient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model FoodOnIngridient {
+  id           String     @id @default(cuid())
+  food         Food       @relation(fields: [foodId], references: [id])
+  foodId       String
+  ingridient   Ingriedent @relation(fields: [ingridientId], references: [id])
+  ingridientId String
+}
+
+model Ingriedent {
+  id   String @id @default(cuid())
+  name String
+
+  foods FoodOnIngridient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
