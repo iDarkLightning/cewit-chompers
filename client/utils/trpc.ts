@@ -9,9 +9,9 @@ export const queryClient = new QueryClient();
 export const trpc = createTRPCReact<AppRouter>();
 
 export const trpcClient = trpc.createClient({
-  transformer: SuperJSON,
   links: [
     httpBatchLink({
+      transformer: SuperJSON,
       url: `${window.location.origin}/trpc`,
     }),
     loggerLink(),
