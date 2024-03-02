@@ -20,8 +20,6 @@ export const Route = createLazyFileRoute("/sign-in")({
 function SignIn() {
   const searchParams = Route.useSearch();
 
-  console.log(searchParams);
-
   return (
     <div>
       Sign in

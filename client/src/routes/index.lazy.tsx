@@ -9,11 +9,19 @@ export const Route = createLazyFileRoute("/")({
 
 function Index() {
   const test = trpc.hello.useQuery();
+  const me = trpc.me.useQuery();
   return (
     <div className="p-2">
       <h3>{test.data}</h3>
 
-      <SignOutButton />
+      {me.data && (
+        <>
+          {me.data.name}
+          {me.data.email}
+        </>
+      )}
+
+      {me.data && <SignOutButton />}
     </div>
   );
 }
