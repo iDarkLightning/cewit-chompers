@@ -60,27 +60,28 @@ model Food {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId String
 
-  ingridients FoodOnIngridient[]
+  ingredients FoodOnIngredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User?    @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
   userId    String?
 }
 
-model FoodOnIngridient {
-  id           String     @id @default(cuid())
+model FoodOnIngredient {
   food         Food       @relation(fields: [foodId], references: [id])
   foodId       String
-  ingridient   Ingriedent @relation(fields: [ingridientId], references: [id])
-  ingridientId String
+  ingredient   Ingreedent @relation(fields: [ingredientId], references: [id])
+  ingredientId String
+
+  @@id([foodId, ingredientId])
 }
 
-model Ingriedent {
+model Ingreedent {
   id   String @id @default(cuid())
   name String
 
-  foods FoodOnIngridient[]
+  foods FoodOnIngredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,9 +1,9 @@
 import { initTRPC } from "@trpc/server";
 import SuperJSON from "superjson";
 
-const t = initTRPC
-  .context<{ authCookie: string }>()
-  .create({ transformer: SuperJSON });
+import { Context } from "./context";
+
+const t = initTRPC.context<Context>().create({ transformer: SuperJSON });
 
 export const publicProcedure = t.procedure;
 export const router = t.router;
