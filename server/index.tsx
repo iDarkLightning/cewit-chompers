@@ -1,6 +1,5 @@
 import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
-import { renderToString } from "react-dom/server";
 
 import { authRouter } from "./api/auth/auth-routes";
 import { createFetchContext } from "./api/trpc/context";
@@ -19,11 +18,16 @@ hono.use(
   }),
 );
 
-hono.get("/*", (ctx) => {
-  const html = renderToString(<ServerEntry />);
+// hono.get("/*", async (ctx) => {
+//   const html = await renderToReadableStream(<ServerEntry />);
 
-  return ctx.html(html);
-});
+//   return ctx.newResponse(html, {
+//     headers: {
+//       "content-type": "text/html;",
+//       "transfer-encoding": "chunked",
+//     },
+//   });
+// });
 
 console.log("Server running on port 3000");
 

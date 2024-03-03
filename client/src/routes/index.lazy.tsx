@@ -2,6 +2,18 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { trpc } from "~/client/utils/trpc";
 import { SignOutButton } from "../components/sign-out-button";
+import { Button } from "../components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../components/ui/drawer";
+import { Input } from "../components/ui/input";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -10,6 +22,8 @@ export const Route = createLazyFileRoute("/")({
 function Index() {
   const test = trpc.potatoes.useQuery();
   const me = trpc.me.useQuery();
+
+  console.log(test.data, me.data);
   return (
     <div className="p-2">
       <h3>{test.data}</h3>
