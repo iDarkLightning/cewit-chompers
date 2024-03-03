@@ -4,6 +4,13 @@ import { useNavigate } from "@tanstack/react-router";
 
 export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
   const navigate = useNavigate();
+  const data = trpc.customer.hasOnboarded.useQuery();
+
+  if (data.data && props.redirectOnFinish) {
+    navigate({
+      to: props.redirectOnFinish
+    });
+  }
 
   const commonIngredients = [
     "chicken",

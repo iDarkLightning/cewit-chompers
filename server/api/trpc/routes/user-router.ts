@@ -88,6 +88,14 @@ export const userRouter = router({
         }
       });
     }),
+  hasOnboarded: authedProcedure
+    .query(async ({ ctx }) => {
+      return ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.user.id
+        }
+      }).then((user) => user?.hasOnboarded)
+    }),
   addToOrder: customerProcedure
     .input(z.object({ foodId: z.string() }))
     .mutation(async ({ ctx, input }) => {
