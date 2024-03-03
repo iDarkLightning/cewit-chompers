@@ -56,7 +56,7 @@ model Restaurant {
 model Food {
   id       String @id @default(cuid())
   name     String
-  imageKey String
+  imageKey String?
 
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId String
