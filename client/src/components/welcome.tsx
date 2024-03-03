@@ -37,13 +37,13 @@ export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
         >
           <source src="/public/chompers.mp4" type="video/mp4" />
         </video>
-        <p>We'll assume you don't like the ones you don't select</p>
+        <p>We'll assume you don't like the ones you don't select:</p>
         <div>
           {commonIngredients.map((i) => (
             <Checkbox label={i} key={i} id={i} />
           ))}
         </div>
-        <button
+        <button 
           onClick={() => {
             const liked: string[] = commonIngredients.filter(
               (i) => document.getElementById(i)?.checked,
@@ -61,7 +61,7 @@ export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
               });
             }
           }}
-          className=""
+          className="w-left bg-emerald-300 rounded-[30px] hover:bg-emerald-400 hover:animate-jump"
         >
           Submit
         </button>

@@ -12,9 +12,9 @@ const Checkbox = (props: CheckboxProps) => (
     <input
       className="
         disabled:border-steel-400 disabled:bg-steel-400 peer relative mt-1 h-4 w-4 shrink-0 appearance-none rounded-sm border-2
-        border-blue-200 bg-white checked:border-0 checked:bg-blue-500
+        border-emerald-200 bg-white checked:border-0 checked:bg-emerald-300 checked:animate-jump-in
         focus:outline-none focus:ring-1
-        focus:ring-blue-100 focus:ring-offset-0
+        focus:ring-emerald-100 focus:ring-offset-0
       "
       type="checkbox"
       {...props}
