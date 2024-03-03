@@ -77,6 +77,17 @@ export const userRouter = router({
         },
       });
     }),
+  completeOnboarding: authedProcedure
+    .mutation(async ({ ctx }) => {
+      return ctx.prisma.user.update({
+        where: {
+          id: ctx.user.id
+        },
+        data: {
+          hasOnboarded: true
+        }
+      });
+    }),
   addToOrder: customerProcedure
     .input(z.object({ foodId: z.string() }))
     .mutation(async ({ ctx, input }) => {

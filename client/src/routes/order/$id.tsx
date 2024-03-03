@@ -9,7 +9,7 @@ export const Route = createFileRoute("/order/$id")({
     if (!user) {
       throw redirect({
         to: "/sign-in", search: {
-          callback: location.href
+          callback: `/home?${new URLSearchParams({ redirect: location.href }).toString()}`
         }
       });
     }
