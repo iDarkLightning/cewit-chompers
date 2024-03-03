@@ -3,6 +3,7 @@ export const FoodItem = (props: {
   description: string;
   price: number;
   imageKey: string | null;
+  actionEl?: React.ReactNode;
 }) => {
   return (
     <div className="flex flex-col gap-4 rounded-lg border-[0.0125rem] border-neutral-200 bg-white">
@@ -23,6 +24,7 @@ export const FoodItem = (props: {
         <p className="text-sm text-neutral-600">
           {props.description.substring(0, 50)}
         </p>
+        <div className="mt-4 w-full">{props.actionEl}</div>
       </div>
     </div>
   );

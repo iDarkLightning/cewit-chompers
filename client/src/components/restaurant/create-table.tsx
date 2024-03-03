@@ -26,6 +26,7 @@ const CreateTableForm = () => {
 
   const create = trpc.restaurant.table.create.useMutation({
     onSuccess: (data) => {
+      utils.restaurant.getBySlug.invalidate();
       // utils.restaurant.table.
     },
   });

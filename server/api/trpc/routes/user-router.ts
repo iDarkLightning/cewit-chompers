@@ -77,25 +77,25 @@ export const userRouter = router({
         },
       });
     }),
-  completeOnboarding: authedProcedure
-    .mutation(async ({ ctx }) => {
-      return ctx.prisma.user.update({
+  completeOnboarding: authedProcedure.mutation(async ({ ctx }) => {
+    return ctx.prisma.user.update({
+      where: {
+        id: ctx.user.id,
+      },
+      data: {
+        hasOnboarded: true,
+      },
+    });
+  }),
+  hasOnboarded: authedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.user
+      .findUnique({
         where: {
-          id: ctx.user.id
+          id: ctx.user.id,
         },
-        data: {
-          hasOnboarded: true
-        }
-      });
-    }),
-  hasOnboarded: authedProcedure
-    .query(async ({ ctx }) => {
-      return ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.user.id
-        }
-      }).then((user) => user?.hasOnboarded)
-    }),
+      })
+      .then((user) => user?.hasOnboarded);
+  }),
   addToOrder: customerProcedure
     .input(z.object({ foodId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -172,6 +172,7 @@ export const userRouter = router({
                 },
               },
             },
+            user: true,
           },
         },
         restaurant: {
@@ -180,6 +181,7 @@ export const userRouter = router({
             menu: true,
           },
         },
+        seats: true,
       },
     });
   }),
