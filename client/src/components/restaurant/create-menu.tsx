@@ -1,6 +1,5 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import {
-  ChevronDoubleRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   PlusIcon,
@@ -35,6 +34,7 @@ import {
 import { Input } from "../ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
+import { UploadButton } from "~/client/utils/uploadthing";
 
 const routeApi = getRouteApi("/restaurant/$slug/manage");
 
@@ -54,6 +54,8 @@ type FormStore = {
   setFoodId: (foodId: string) => void;
   ingredients: Ingredient[];
   setIngredients: (ingredients: Ingredient[]) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 };
 
 const useFormStore = create<FormStore>((set) => ({
@@ -70,16 +72,17 @@ const useFormStore = create<FormStore>((set) => ({
       ingredients: [],
     }),
   foodId: null,
+  open: false,
   setFoodId: (foodId: string) => set({ foodId }),
   setBasicInfo: (basicInfo: BasicInfo) => set({ basicInfo }),
   setStep: (step: FormStore["step"]) => set({ step }),
   ingredients: [],
   setIngredients: (ingredients: Ingredient[]) => set({ ingredients }),
+  onOpenChange: (open) => set({ open }),
 }));
 
 const WizardStepOne = (props: { submitCallback: () => void }) => {
   const { basicInfo, setBasicInfo } = useFormStore();
-  const navigate = useNavigate();
 
   const form = useForm({
     defaultValues: basicInfo,
@@ -350,10 +353,57 @@ const WizardStepTwo = (props: { animationControls: AnimationControls }) => {
   );
 };
 
-const WizardStepThree = () => {
+const WizardStepThree = (props: { animationControls: AnimationControls }) => {
+  const [foodId, setStep, onOpenChange] = useFormStore((s) => [s.foodId, s.setStep, s.onOpenChange]);
+
   return (
     <div>
-      <p>Step 3</p>
+      <div className="flex items-center justify-between gap-4">
+        <DrawerHeader>
+          <DrawerTitle>Upload A Picture</DrawerTitle>
+          <DrawerDescription>
+            Add a picture of your dish!
+          </DrawerDescription>
+        </DrawerHeader>
+      </div>
+      <UploadButton
+        endpoint="image"
+        input={{ foodId: foodId! }}
+      />
+      <div className="flex gap-2 py-4">
+        <Button
+          variant="secondary"
+          className="flex-1 items-center gap-1"
+          onClick={() => {
+            props.animationControls.start({
+              x: "10%",
+              opacity: 0,
+              transition: { duration: 0.1 },
+            });
+            setTimeout(() => setStep("ingredients"), 150);
+            setTimeout(
+              () =>
+                props.animationControls.start({
+                  x: "0%",
+                  opacity: 1,
+                  transition: { duration: 0.015 },
+                }),
+              225,
+            );
+          }}
+        >
+          <span>
+            <ChevronLeftIcon className="h-4 w-4" />
+          </span>
+          <span>Back</span>
+        </Button>
+        <Button className="flex-1 items-center gap-1" onClick={() => onOpenChange(false)}>
+          <span>Finish</span>
+          <span>
+            <ChevronRightIcon className="h-4 w-4" />
+          </span>
+        </Button>
+      </div>
     </div>
   );
 };
@@ -408,35 +458,36 @@ const CreateDishForm = () => {
         </>
       )}
 
-      {step === "picture" && <WizardStepThree />}
+      {step === "picture" && <WizardStepThree animationControls={animationControls}/>}
     </motion.div>
   );
 };
 
 export const CreateMenu = () => {
-  const reset = useFormStore((s) => s.reset);
+  const [reset, open, onOpenChange] = useFormStore((s) => [s.reset, s.open, s.onOpenChange]);
 
-  return (
+  return (<>
+    <Button variant="secondary" onClick={() => onOpenChange(true)}>
+      <span className="mr-4">
+        <PlusIcon className="h-4 w-4" />
+      </span>
+      <span>Add Item</span>
+    </Button>
     <Drawer
+      open={open}
+      onOpenChange={onOpenChange}
       onClose={() => {
         setTimeout(reset, 500);
       }}
     >
       <DrawerTrigger asChild>
-        <Button variant="secondary">
-          <span className="mr-4">
-            <PlusIcon className="h-4 w-4" />
-          </span>
-          <span>Add Item</span>
-        </Button>
       </DrawerTrigger>
       <DrawerContent>
         {/* <DrawerHeader>
           <DrawerTitle>Add a new dish</DrawerTitle>
           <DrawerDescription>Make sure its yummy!</DrawerDescription>
-        </DrawerHeader> */}
         {/* <div> */}
-        {/* <AnimatePresence> */}
+        {/* <AnitePresence> */}
         <ResizablePanel>
           <CreateDishForm />
         </ResizablePanel>
@@ -444,6 +495,7 @@ export const CreateMenu = () => {
         {/* </div> */}
       </DrawerContent>
     </Drawer>
+  </>
   );
 };
 
