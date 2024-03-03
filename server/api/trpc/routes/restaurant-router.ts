@@ -1,9 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { createMenuItemScheme, createTableSchema } from "~/shared/schemas";
 import { router } from "..";
 import { authedProcedure } from "../../auth/authed-procedure";
-import { createMenuItemScheme, createTableSchema } from "~/shared/schemas";
 
 const restaurantOwnerProcedure = authedProcedure
   .input(z.object({ restaurantSlug: z.string() }))
@@ -12,6 +12,9 @@ const restaurantOwnerProcedure = authedProcedure
       where: {
         slug: opts.input.restaurantSlug,
         ownerId: opts.ctx.user.id,
+      },
+      include: {
+        menu: true,
       },
     });
 
@@ -51,14 +54,13 @@ export const restaurantRouter = router({
           },
         });
       }),
-    delete: restaurantOwnerProcedure
-      .mutation(async ({ ctx }) => {
-        return ctx.prisma.food.delete({
-          where: {
-            id: ctx.restaurant.id
-          }
-        })
-      })
+    delete: restaurantOwnerProcedure.mutation(async ({ ctx }) => {
+      return ctx.prisma.food.delete({
+        where: {
+          id: ctx.restaurant.id,
+        },
+      });
+    }),
   },
 
   table: {
@@ -69,8 +71,8 @@ export const restaurantRouter = router({
           data: {
             restaurantId: ctx.restaurant.id,
             seats: input.seats,
-          }
-        })
+          },
+        });
       }),
     clear: restaurantOwnerProcedure
       .input(z.object({ tableId: z.string() }))
@@ -78,18 +80,18 @@ export const restaurantRouter = router({
         return ctx.prisma.$transaction(async (tx) => {
           const customerFoods = await tx.customer.findMany({
             where: {
-              tableId: input.tableId
+              tableId: input.tableId,
             },
             select: {
               userId: true,
-              foods: true
-            }
+              foods: true,
+            },
           });
 
           customerFoods.forEach(async ({ userId, foods }) => {
             await tx.user.update({
               where: {
-                id: userId
+                id: userId,
               },
               data: {
                 pastOrders: {
@@ -97,26 +99,26 @@ export const restaurantRouter = router({
                     restaurantId: ctx.restaurant.id,
                     foods: {
                       createMany: {
-                        data: foods.map((food) => ({ foodId: food.foodId }))
-                      }
-                    }
-                  }
-                }
-              }
+                        data: foods.map((food) => ({ foodId: food.foodId })),
+                      },
+                    },
+                  },
+                },
+              },
             });
           });
 
           await tx.table.update({
             where: {
-              id: input.tableId
+              id: input.tableId,
             },
             data: {
               occupied: false,
               customers: {
-                deleteMany: {}
-              }
-            }
-          })
+                deleteMany: {},
+              },
+            },
+          });
         });
       }),
     delete: restaurantOwnerProcedure
@@ -124,10 +126,10 @@ export const restaurantRouter = router({
       .mutation(async ({ ctx, input }) => {
         return ctx.prisma.table.delete({
           where: {
-            id: input.tableId
-          }
-        })
-      })
+            id: input.tableId,
+          },
+        });
+      }),
   },
 
   create: authedProcedure
