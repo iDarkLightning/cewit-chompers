@@ -3,6 +3,8 @@ import Checkbox from "./ui/checkbox";
 import { useNavigate } from "@tanstack/react-router";
 
 export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
+  const navigate = useNavigate();
+
   const commonIngredients = [
     "chicken",
     "beef",
@@ -16,8 +18,7 @@ export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
 
   const likesMutation = trpc.customer.addLikes.useMutation();
   const dislikesMutation = trpc.customer.addDislikes.useMutation();
-
-  const navigate = useNavigate();
+  const onboardMutation = trpc.customer.completeOnboarding.useMutation();
 
   return (
     <>
@@ -43,7 +44,7 @@ export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
             <Checkbox label={i} key={i} id={i} />
           ))}
         </div>
-        <button 
+        <button
           onClick={() => {
             const liked: string[] = commonIngredients.filter(
               (i) => document.getElementById(i)?.checked,
@@ -54,6 +55,7 @@ export const Welcome = (props: { redirectOnFinish: string | undefined }) => {
 
             likesMutation.mutate({ likes: liked });
             dislikesMutation.mutate({ dislikes: disliked });
+            onboardMutation.mutate();
 
             if (props.redirectOnFinish) {
               navigate({

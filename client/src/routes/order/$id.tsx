@@ -1,5 +1,4 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { APP_URL } from "~/shared/constants";
 
 export const Route = createFileRoute("/order/$id")({
   beforeLoad: async ({ context, location }) => {
