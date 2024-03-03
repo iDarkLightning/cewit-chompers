@@ -22,7 +22,11 @@ model User {
   oauthAccounts    OauthAccount[]
   ownedRestaurants Restaurant[]
 
-  dietaryRestrictions Food[]
+  dietaryRestrictions IngredientOnUser[]
+
+  customer Customer?
+
+  pastOrders PastOrder[]
 }
 
 model Session {
@@ -41,32 +45,57 @@ model OauthAccount {
   @@id([providerName, providerUserId])
 }
 
-model Restaurant {
+model Customer {
   id      String @id @default(cuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String @unique
+  table   Table  @relation(fields: [tableId], references: [id])
+  tableId String @unique
+
+  foods FoodOnCustomer[]
+}
+
+model FoodOnCustomer {
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  food       Food     @relation(fields: [foodId], references: [id])
+  foodId     String
+
+  @@id([customerId, foodId])
+}
+
+model Restaurant {
+  id      String  @id @default(cuid())
   name    String
-  slug    String @unique
-  owner   User   @relation(fields: [ownerId], references: [id])
+  slug    String  @unique
+  owner   User    @relation(fields: [ownerId], references: [id])
   ownerId String
   menu    Food[]
+  tables  Table[]
+
+  pastOrders PastOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Food {
-  id       String @id @default(cuid())
-  name     String
+  id          String @id @default(cuid())
+  name        String
+  price       Float
+  description String
+
   imageKey String?
 
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId String
 
-  ingredients FoodOnIngredient[]
+  ingredients          FoodOnIngredient[]
+  customers            FoodOnCustomer[]
+  pastOrdersContaining FoodOnPastOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
 }
 
 model FoodOnIngredient {
@@ -84,6 +113,52 @@ model Ingredient {
 
   foods FoodOnIngredient[]
 
+  usersWhoCantEat IngredientOnUser[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model IngredientOnUser {
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@id([ingredientId, userId])
+}
+
+model Table {
+  id        String     @id @default(cuid())
+  occupied  Boolean    @default(false)
+  seats     Int
+  customers Customer[]
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PastOrder {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+
+  foods FoodOnPastOrder[]
+
+  date DateTime @default(now())
+}
+
+model FoodOnPastOrder {
+  food        Food      @relation(fields: [foodId], references: [id])
+  foodId      String
+  order       PastOrder @relation(fields: [pastOrderId], references: [id])
+  pastOrderId String
+
+  @@id([foodId, pastOrderId])
 }

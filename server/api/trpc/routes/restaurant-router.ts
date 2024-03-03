@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { router } from "..";
 import { authedProcedure } from "../../auth/authed-procedure";
+import { createMenuItemScheme, createTableSchema } from "~/shared/schemas";
 
 const restaurantOwnerProcedure = authedProcedure
   .input(z.object({ restaurantSlug: z.string() }))
@@ -30,12 +31,7 @@ const restaurantOwnerProcedure = authedProcedure
 export const restaurantRouter = router({
   menu: {
     create: restaurantOwnerProcedure
-      .input(
-        z.object({
-          name: z.string(),
-          ingredientIds: z.array(z.object({ ingredientId: z.string() })),
-        }),
-      )
+      .input(createMenuItemScheme)
       .mutation(async ({ ctx, input }) => {
         return ctx.prisma.food.create({
           data: {
@@ -45,6 +41,8 @@ export const restaurantRouter = router({
                 id: ctx.restaurant.id,
               },
             },
+            price: input.price,
+            description: input.description,
             ingredients: {
               createMany: {
                 data: input.ingredientIds,
@@ -53,6 +51,83 @@ export const restaurantRouter = router({
           },
         });
       }),
+    delete: restaurantOwnerProcedure
+      .mutation(async ({ ctx }) => {
+        return ctx.prisma.food.delete({
+          where: {
+            id: ctx.restaurant.id
+          }
+        })
+      })
+  },
+
+  table: {
+    create: restaurantOwnerProcedure
+      .input(createTableSchema)
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.table.create({
+          data: {
+            restaurantId: ctx.restaurant.id,
+            seats: input.seats,
+          }
+        })
+      }),
+    clear: restaurantOwnerProcedure
+      .input(z.object({ tableId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.$transaction(async (tx) => {
+          const customerFoods = await tx.customer.findMany({
+            where: {
+              tableId: input.tableId
+            },
+            select: {
+              userId: true,
+              foods: true
+            }
+          });
+
+          customerFoods.forEach(async ({ userId, foods }) => {
+            await tx.user.update({
+              where: {
+                id: userId
+              },
+              data: {
+                pastOrders: {
+                  create: {
+                    restaurantId: ctx.restaurant.id,
+                    foods: {
+                      createMany: {
+                        data: foods.map((food) => ({ foodId: food.foodId }))
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          });
+
+          await tx.table.update({
+            where: {
+              id: input.tableId
+            },
+            data: {
+              occupied: false,
+              customers: {
+                deleteMany: {}
+              }
+            }
+          })
+        });
+      }),
+    delete: restaurantOwnerProcedure
+      .input(z.object({ tableId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.table.delete({
+          where: {
+            id: input.tableId
+          }
+        })
+      })
   },
 
   create: authedProcedure
