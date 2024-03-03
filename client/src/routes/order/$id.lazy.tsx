@@ -22,7 +22,7 @@ function OrderView() {
   const joinMutation = trpc.customer.joinTable.useMutation();
   const { data, refetch } = trpc.customer.getOrder.useQuery(undefined, {
     enabled: joinMutation.isSuccess,
-    refetchInterval: 100,
+    refetchInterval: 10_000,
   });
 
   useEffect(() => {
