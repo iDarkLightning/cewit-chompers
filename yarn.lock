@@ -1345,19 +1345,19 @@
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
 "@trpc/client@^11.0.0-next-beta.303":
-  version "11.0.0-next-beta.303"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-11.0.0-next-beta.303.tgz#d3b42e1f944adb802eca26ae18bf41d83af46db3"
-  integrity sha512-xA4cnBjBHV6M0euJ9OSJG7hqEzGiSUsGfRAjC/xn5ribvJYyC5lYyT6NHW4lBCjC9+4CQPRfQ8LM8zYQAzmiKA==
+  version "11.0.0-next-beta.304"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-11.0.0-next-beta.304.tgz#e5d447ee28176ea9e9ff29db3f142c1c5e65a137"
+  integrity sha512-NOTaKb9F3KWMruxdrU9TBIY45rGnnn4ImqmMoxW1CJO4SGL8XRqL/5xC8XcNTc3cXXv6eFOt8rNwQM9hCN2G2A==
 
 "@trpc/react-query@^11.0.0-next-beta.303":
-  version "11.0.0-next-beta.303"
-  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-11.0.0-next-beta.303.tgz#efbb9311dcc4268397cd711637e63469808b0f61"
-  integrity sha512-H4+kmw0Z6ipUWD30uVnuvWFV6AsM0Md31BHHBwn7MCJvEf8bcsuSEY+eW8bC7pjD9c9J+OdkN/Flx1gNkJpTyA==
+  version "11.0.0-next-beta.304"
+  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-11.0.0-next-beta.304.tgz#a23b53789bffc3175b0ab717276ea3e533dfb9f6"
+  integrity sha512-DkfNUVxxEgKtel5Z9DUaw815oy8VGK7i626FrUs7PRQ7PEcQ5WDBXbYXsukOqx+qEpx09dgiWBBG6LGQf6U9Dg==
 
 "@trpc/server@^11.0.0-next-beta.303":
-  version "11.0.0-next-beta.303"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-11.0.0-next-beta.303.tgz#0e3c29e02dbc45f6427d37891741687a60096aef"
-  integrity sha512-ubUYS8nkjSbAGOXDp+TnWbktLzDGmuLebc6ahXWM2L4rfdY9UWrUk84VafOYkGSdN6jpdlQ+7/dDUgRNYVgL/g==
+  version "11.0.0-next-beta.304"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-11.0.0-next-beta.304.tgz#0e5e9b2f9e3c2c6c770fd9eeec768d9f99b92f63"
+  integrity sha512-vviyE80LZ8LFML/w0usDjcUbduhsBtLBO+MKXhAtRfo25FxajhDFWvuvdqglAlTxFmCuH7oX+GxfCTjcsnnHyQ==
 
 "@ts-morph/common@~0.19.0":
   version "0.19.0"
@@ -3828,7 +3828,6 @@ stdin-discarder@^0.1.0:
     bl "^5.0.0"
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
-  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
