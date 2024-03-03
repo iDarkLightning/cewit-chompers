@@ -5,11 +5,11 @@ import { router } from "..";
 import { authedProcedure } from "../../auth/authed-procedure";
 
 const restaurantOwnerProcedure = authedProcedure
-  .input(z.object({ restaurantId: z.string() }))
+  .input(z.object({ restaurantSlug: z.string() }))
   .use(async (opts) => {
     const ownedRestaurant = await opts.ctx.prisma.restaurant.findUnique({
       where: {
-        id: opts.input.restaurantId,
+        slug: opts.input.restaurantSlug,
         ownerId: opts.ctx.user.id,
       },
     });
@@ -83,4 +83,6 @@ export const restaurantRouter = router({
         },
       });
     }),
+
+  getBySlug: restaurantOwnerProcedure.query(async ({ ctx }) => ctx.restaurant),
 });
