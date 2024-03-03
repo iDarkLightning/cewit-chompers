@@ -1,3 +1,4 @@
+import { trpc } from "~/client/utils/trpc";
 import Checkbox from "./ui/checkbox";
 
 export const Welcome = () => {
@@ -11,6 +12,8 @@ export const Welcome = () => {
     "flour",
     "cheese",
   ];
+
+  const likes = trpc.restaurant.create.useMutation({});
 
   return (
     <>
@@ -44,9 +47,8 @@ export const Welcome = () => {
             const disliked: string[] = commonIngredients.filter(
               (i) => !document.getElementById(i)?.checked,
             );
-            alert(liked);
-            alert(disliked);
           }}
+          className=""
         >
           Submit
         </button>
