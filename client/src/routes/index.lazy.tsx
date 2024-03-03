@@ -2,18 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { trpc } from "~/client/utils/trpc";
 import { SignOutButton } from "../components/sign-out-button";
-import { Button } from "../components/ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "../components/ui/drawer";
-import { Input } from "../components/ui/input";
+import { FoodImageUploadButton } from "../components/upload-food-button";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -34,6 +23,7 @@ function Index() {
         </>
       )}
       {!!me.data && <SignOutButton />}
+      <FoodImageUploadButton foodId="cltaq36z90001ig9dgiar3w37" />
     </div>
   );
 }
