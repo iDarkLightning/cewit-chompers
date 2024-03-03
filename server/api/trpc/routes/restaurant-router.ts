@@ -54,13 +54,23 @@ export const restaurantRouter = router({
           },
         });
       }),
+    deleteMenuItem: restaurantOwnerProcedure
+      .input(z.object({ foodId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        return ctx.prisma.food.delete({
+          where: {
+            id: input.foodId,
+            restaurantId: ctx.restaurant.id
+          }
+        })
+      }),
     delete: restaurantOwnerProcedure.mutation(async ({ ctx }) => {
-      return ctx.prisma.food.delete({
-        where: {
-          id: ctx.restaurant.id,
-        },
-      });
-    }),
+        return ctx.prisma.food.delete({
+          where: {
+            id: ctx.restaurant.id,
+          },
+        });
+      }),
   },
 
   table: {

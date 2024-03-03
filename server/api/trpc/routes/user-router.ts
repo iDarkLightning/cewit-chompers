@@ -50,11 +50,11 @@ export const userRouter = router({
       });
     }),
   addLikes: authedProcedure
-    .input(z.object({ userId: z.string(), likes: z.array(z.string()) }))
+    .input(z.object({ likes: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.user.update({
         where: {
-          id: input.userId,
+          id: ctx.user.id,
         },
         data: {
           likes: {
@@ -64,11 +64,11 @@ export const userRouter = router({
       });
     }),
   addDislikes: authedProcedure
-    .input(z.object({ userId: z.string(), dislikes: z.array(z.string()) }))
+    .input(z.object({ dislikes: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.user.update({
         where: {
-          id: input.userId,
+          id: ctx.user.id,
         },
         data: {
           dislikes: {
