@@ -448,12 +448,6 @@ const CreateDishForm = () => {
 
       {step === "ingredients" && (
         <>
-          {/* <DrawerHeader>
-            <DrawerTitle>Add a new dish</DrawerTitle>
-            <DrawerDescription>
-              Let's start by adding some of the basic info!
-            </DrawerDescription>
-          </DrawerHeader> */}
           <Suspense>
             <WizardStepTwo animationControls={animationControls} />
           </Suspense>
@@ -473,6 +467,7 @@ export const CreateMenu = () => {
     s.open,
     s.onOpenChange,
   ]);
+  const utils = trpc.useUtils();
 
   return (
     <>
@@ -487,20 +482,15 @@ export const CreateMenu = () => {
         onOpenChange={onOpenChange}
         onClose={() => {
           setTimeout(reset, 500);
+
+          utils.restaurant.getBySlug.invalidate();
         }}
       >
         <DrawerTrigger asChild></DrawerTrigger>
         <DrawerContent>
-          {/* <DrawerHeader>
-          <DrawerTitle>Add a new dish</DrawerTitle>
-          <DrawerDescription>Make sure its yummy!</DrawerDescription>
-        {/* <div> */}
-          {/* <AnitePresence> */}
           <ResizablePanel>
             <CreateDishForm />
           </ResizablePanel>
-          {/* </AnimatePresence> */}
-          {/* </div> */}
         </DrawerContent>
       </Drawer>
     </>

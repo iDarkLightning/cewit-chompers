@@ -15,6 +15,11 @@ const restaurantOwnerProcedure = authedProcedure
       },
       include: {
         menu: true,
+        tables: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
@@ -60,17 +65,17 @@ export const restaurantRouter = router({
         return ctx.prisma.food.delete({
           where: {
             id: input.foodId,
-            restaurantId: ctx.restaurant.id
-          }
-        })
-      }),
-    delete: restaurantOwnerProcedure.mutation(async ({ ctx }) => {
-        return ctx.prisma.food.delete({
-          where: {
-            id: ctx.restaurant.id,
+            restaurantId: ctx.restaurant.id,
           },
         });
       }),
+    delete: restaurantOwnerProcedure.mutation(async ({ ctx }) => {
+      return ctx.prisma.food.delete({
+        where: {
+          id: ctx.restaurant.id,
+        },
+      });
+    }),
   },
 
   table: {
