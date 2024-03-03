@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { APP_URL } from "~/shared/constants";
 
 export const Route = createFileRoute("/order/$id")({
   beforeLoad: async ({ context, location }) => {
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/order/$id")({
     if (!user) {
       throw redirect({
         to: "/sign-in", search: {
-          callback: location.href
+          callback: `/home?${new URLSearchParams({ redirect: location.href }).toString()}`
         }
       });
     }
