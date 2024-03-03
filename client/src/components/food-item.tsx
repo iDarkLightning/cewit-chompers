@@ -18,7 +18,7 @@ export const FoodItem = (props: {
         <div className="flex items-center justify-between gap-4">
           <p className="text-lg font-medium">{props.name}</p>
           <p className="rounded-full border-[0.0125rem] border-amber-200 bg-amber-300 px-4 py-0.5 text-amber-900">
-            ${props.price}
+            {Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(props.price)}
           </p>
         </div>
         <p className="text-sm text-neutral-600">
