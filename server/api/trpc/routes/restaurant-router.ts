@@ -93,35 +93,35 @@ export const restaurantRouter = router({
       .input(z.object({ tableId: z.string() }))
       .mutation(async ({ ctx, input }) => {
         return ctx.prisma.$transaction(async (tx) => {
-          // const customerFoods = await tx.customer.findMany({
-          //   where: {
-          //     tableId: input.tableId,
-          //   },
-          //   select: {
-          //     userId: true,
-          //     foods: true,
-          //   },
-          // });
+          const customerFoods = await tx.customer.findMany({
+            where: {
+              tableId: input.tableId,
+            },
+            select: {
+              userId: true,
+              foods: true,
+            },
+          });
 
-          // customerFoods.forEach(async ({ userId, foods }) => {
-          //   await tx.user.update({
-          //     where: {
-          //       id: userId,
-          //     },
-          //     data: {
-          //       pastOrders: {
-          //         create: {
-          //           restaurantId: ctx.restaurant.id,
-          //           foods: {
-          //             createMany: {
-          //               data: foods.map((food) => ({ foodId: food.foodId })),
-          //             },
-          //           },
-          //         },
-          //       },
-          //     },
-          //   });
-          // });
+          customerFoods.forEach(async ({ userId, foods }) => {
+            await tx.user.update({
+              where: {
+                id: userId,
+              },
+              data: {
+                pastOrders: {
+                  create: {
+                    restaurantId: ctx.restaurant.id,
+                    foods: {
+                      createMany: {
+                        data: foods.map((food) => ({ foodId: food.foodId })),
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          });
 
           await tx.table.update({
             where: {
