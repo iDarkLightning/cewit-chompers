@@ -3,19 +3,17 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "../../lib/cn";
-import { disabledStyles } from "./styles/disabled-style";
-import { focusStyles } from "./styles/focus-style";
 
 const buttonVariants = cva(
   cn(
     "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors",
-    focusStyles(),
-    disabledStyles(),
+    "disabled:pointer-events-none disabled:opacity-50",
+    "ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-0",
   ),
   {
     variants: {
       variant: {
-        default: "bg-emerald-400 text-neutral-950 hover:bg-emerald-400/80",
+        default: "bg-emerald-200 text-neutral-950 hover:bg-emerald-400/80",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:

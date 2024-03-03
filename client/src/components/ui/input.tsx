@@ -1,8 +1,6 @@
 import * as React from "react";
 
 import { cn } from "../../lib/cn";
-import { disabledStyles } from "./styles/disabled-style";
-import { focusStyles } from "./styles/focus-style";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -13,9 +11,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "placeholder:text-muted-neutral-400 flex h-10 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium ",
-          disabledStyles(),
-          focusStyles(),
+          "flex h-10 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-400 ",
+          "ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-0",
+          "disabled:pointer-events-none disabled:opacity-50",
           className,
         )}
         ref={ref}
