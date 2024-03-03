@@ -36,8 +36,14 @@ export const userRouter = router({
         data: {
           occupied: true,
           customers: {
-            create: {
-              userId: ctx.user.id
+            connectOrCreate: {
+              where: {
+                userId: ctx.user.id,
+                tableId: input.tableId,
+              },
+              create: {
+                userId: ctx.user.id,
+              }
             }
           }
         }
@@ -90,6 +96,46 @@ export const userRouter = router({
         }
       })
     }),
+  getOrder: customerProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.table.findFirst({
+      where: {
+        customers: {
+          some: {
+            id: ctx.customer.id
+          }
+        }
+      },
+      select: {
+        customers: {
+          include: {
+            foods: {
+              select: {
+                food: {
+                  include: {
+                    ingredients: {
+                      select: {
+                        ingredient: {
+                          select: {
+                            name: true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+          }
+        },
+        restaurant: {
+          select: {
+            name: true,
+            menu: true,
+          }
+        },
+      }
+    })
+  }),
   removeFromOrder: customerProcedure
     .input(z.object({ foodId: z.string() }))
     .mutation(async ({ ctx, input }) => {
