@@ -25,7 +25,10 @@ function RestaurantManageLayout() {
         <h1 className="text-lg font-medium">{restaurant.name}</h1>
         <div className="flex flex-wrap gap-4">
           <div className="rounded-full bg-white px-4 py-0.5 font-medium text-black">
-            <p>8/17 Tables Free</p>
+            <p>
+              {restaurant.tables.filter((t) => !t.occupied).length}/
+              {restaurant.tables.length} Tables Free
+            </p>
           </div>
         </div>
       </div>
