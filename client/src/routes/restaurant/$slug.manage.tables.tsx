@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Router = createFileRoute("/restaurant/$slug/manage/tables")({
+export const Route = createFileRoute("/restaurant/$slug/manage/tables")({
   
 })
