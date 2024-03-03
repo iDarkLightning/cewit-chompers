@@ -20,7 +20,9 @@ export const FoodItem = (props: {
             ${props.price}
           </p>
         </div>
-        <p className="text-sm text-neutral-600">{props.description.substring(0, 50)}</p>
+        <p className="text-sm text-neutral-600">
+          {props.description.substring(0, 50)}
+        </p>
       </div>
     </div>
   );

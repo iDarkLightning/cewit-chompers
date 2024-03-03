@@ -1281,7 +1281,7 @@
   dependencies:
     "@tanstack/query-core" "5.24.6"
 
-"@tanstack/react-router@^1.14.5":
+"@tanstack/react-router@^1.18.3":
   version "1.18.3"
   resolved "https://registry.yarnpkg.com/@tanstack/react-router/-/react-router-1.18.3.tgz#f6f095ae79ec467bdf483d2e72aeffaa7315212e"
   integrity sha512-SaP3myClq8VLrIy+ZCQb+azRa55quWeKVCyjbRZUfNWS0mzRRWkCeNfWBb8M9dYimTLeGHck8GthZDuQBiBkbw==
@@ -1315,7 +1315,7 @@
     prettier "^3.1.1"
     zod "^3.22.4"
 
-"@tanstack/router-vite-plugin@^1.14.1":
+"@tanstack/router-vite-plugin@^1.18.1":
   version "1.18.1"
   resolved "https://registry.yarnpkg.com/@tanstack/router-vite-plugin/-/router-vite-plugin-1.18.1.tgz#ae534082ea8494f938563e9a799fa4eb990f8353"
   integrity sha512-gGlU5TbeQZWYERQVmjjTiZxPsrL2Id51YbL5MFQ41HBRmNMRPl4Xom32sc8ZzwADw8YXA9uPcRqRYFBLQDABSA==

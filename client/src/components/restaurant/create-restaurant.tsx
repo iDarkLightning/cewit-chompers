@@ -12,7 +12,7 @@ export const CreateRestaurantForm = () => {
   const create = trpc.restaurant.create.useMutation({
     onSuccess: (data) => {
       navigate({
-        to: "/restaurant/$slug/manage",
+        to: "/restaurant/$slug/manage/menu",
         params: {
           slug: data.slug,
         },

@@ -1,8 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import {
-  createRootRouteWithContext,
-  Outlet,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { createTRPCQueryUtils } from "@trpc/react-query";
 
 import { queryClient, trpc, trpcClient } from "~/client/utils/trpc";
@@ -12,6 +9,7 @@ import { cn } from "../lib/cn";
 export const Route = createRootRouteWithContext<{
   queryUtils: ReturnType<typeof createTRPCQueryUtils<AppRouter>>;
 }>()({
+  wrapInSuspense: true,
   component: () => {
     return (
       <>

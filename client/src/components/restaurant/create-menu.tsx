@@ -20,6 +20,7 @@ import { z } from "zod";
 import { create } from "zustand";
 
 import { trpc } from "~/client/utils/trpc";
+import { UploadButton } from "~/client/utils/uploadthing";
 import { Button } from "../ui/button";
 import {
   Drawer,
@@ -34,9 +35,8 @@ import {
 import { Input } from "../ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
-import { UploadButton } from "~/client/utils/uploadthing";
 
-const routeApi = getRouteApi("/restaurant/$slug/manage");
+const routeApi = getRouteApi("/restaurant/$slug/manage/menu");
 
 type BasicInfo = {
   name: string;
@@ -354,22 +354,21 @@ const WizardStepTwo = (props: { animationControls: AnimationControls }) => {
 };
 
 const WizardStepThree = (props: { animationControls: AnimationControls }) => {
-  const [foodId, setStep, onOpenChange] = useFormStore((s) => [s.foodId, s.setStep, s.onOpenChange]);
+  const [foodId, setStep, onOpenChange] = useFormStore((s) => [
+    s.foodId,
+    s.setStep,
+    s.onOpenChange,
+  ]);
 
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
         <DrawerHeader>
           <DrawerTitle>Upload A Picture</DrawerTitle>
-          <DrawerDescription>
-            Add a picture of your dish!
-          </DrawerDescription>
+          <DrawerDescription>Add a picture of your dish!</DrawerDescription>
         </DrawerHeader>
       </div>
-      <UploadButton
-        endpoint="image"
-        input={{ foodId: foodId! }}
-      />
+      <UploadButton endpoint="image" input={{ foodId: foodId! }} />
       <div className="flex gap-2 py-4">
         <Button
           variant="secondary"
@@ -397,7 +396,10 @@ const WizardStepThree = (props: { animationControls: AnimationControls }) => {
           </span>
           <span>Back</span>
         </Button>
-        <Button className="flex-1 items-center gap-1" onClick={() => onOpenChange(false)}>
+        <Button
+          className="flex-1 items-center gap-1"
+          onClick={() => onOpenChange(false)}
+        >
           <span>Finish</span>
           <span>
             <ChevronRightIcon className="h-4 w-4" />
@@ -458,44 +460,50 @@ const CreateDishForm = () => {
         </>
       )}
 
-      {step === "picture" && <WizardStepThree animationControls={animationControls}/>}
+      {step === "picture" && (
+        <WizardStepThree animationControls={animationControls} />
+      )}
     </motion.div>
   );
 };
 
 export const CreateMenu = () => {
-  const [reset, open, onOpenChange] = useFormStore((s) => [s.reset, s.open, s.onOpenChange]);
+  const [reset, open, onOpenChange] = useFormStore((s) => [
+    s.reset,
+    s.open,
+    s.onOpenChange,
+  ]);
 
-  return (<>
-    <Button variant="secondary" onClick={() => onOpenChange(true)}>
-      <span className="mr-4">
-        <PlusIcon className="h-4 w-4" />
-      </span>
-      <span>Add Item</span>
-    </Button>
-    <Drawer
-      open={open}
-      onOpenChange={onOpenChange}
-      onClose={() => {
-        setTimeout(reset, 500);
-      }}
-    >
-      <DrawerTrigger asChild>
-      </DrawerTrigger>
-      <DrawerContent>
-        {/* <DrawerHeader>
+  return (
+    <>
+      <Button variant="secondary" onClick={() => onOpenChange(true)}>
+        <span className="mr-4">
+          <PlusIcon className="h-4 w-4" />
+        </span>
+        <span>Add Item</span>
+      </Button>
+      <Drawer
+        open={open}
+        onOpenChange={onOpenChange}
+        onClose={() => {
+          setTimeout(reset, 500);
+        }}
+      >
+        <DrawerTrigger asChild></DrawerTrigger>
+        <DrawerContent>
+          {/* <DrawerHeader>
           <DrawerTitle>Add a new dish</DrawerTitle>
           <DrawerDescription>Make sure its yummy!</DrawerDescription>
         {/* <div> */}
-        {/* <AnitePresence> */}
-        <ResizablePanel>
-          <CreateDishForm />
-        </ResizablePanel>
-        {/* </AnimatePresence> */}
-        {/* </div> */}
-      </DrawerContent>
-    </Drawer>
-  </>
+          {/* <AnitePresence> */}
+          <ResizablePanel>
+            <CreateDishForm />
+          </ResizablePanel>
+          {/* </AnimatePresence> */}
+          {/* </div> */}
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
 
