@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 
 import { trpc } from "~/client/utils/trpc";
 import { Button } from "../ui/button";
@@ -28,6 +29,7 @@ export const CreateRestaurantForm = () => {
         name: values.value.name,
       });
     },
+    validatorAdapter: zodValidator,
   });
 
   return (
@@ -65,7 +67,6 @@ export const CreateRestaurantForm = () => {
             </Button>
           )}
         />
-        <p></p>
       </form>
     </form.Provider>
   );
