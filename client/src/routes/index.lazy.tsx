@@ -2,7 +2,6 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 
 import { trpc } from "~/client/utils/trpc";
 import { SignOutButton } from "../components/sign-out-button";
-import { FoodImageUploadButton } from "../components/upload-food-button";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -23,7 +22,6 @@ function Index() {
         </>
       )}
       {!!me.data && <SignOutButton />}
-      <FoodImageUploadButton foodId="cltaq36z90001ig9dgiar3w37" />
     </div>
   );
 }

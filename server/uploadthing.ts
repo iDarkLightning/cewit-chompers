@@ -15,8 +15,8 @@ export const uploadRouter = {
     .middleware(async ({ input }) => {
       return input;
     })
-    .onUploadComplete((data) => {
-      prisma.food.update({
+    .onUploadComplete(async (data) => {
+      await prisma.food.update({
         where: {
           id: data.metadata.foodId
         },
