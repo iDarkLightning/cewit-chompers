@@ -7,9 +7,14 @@ import {
 } from "@heroicons/react/16/solid";
 import { Ingredient } from "@prisma/client";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import { AnimationControls, motion, useAnimationControls } from "framer-motion";
+import {
+  AnimationControls,
+  animationControls,
+  motion,
+  useAnimationControls,
+} from "framer-motion";
 import useMeasure from "react-use-measure";
 import { Drawer as VaulDrawer } from "vaul";
 import { z } from "zod";
@@ -31,6 +36,8 @@ import { Input } from "../ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
 
+const routeApi = getRouteApi("/restaurant/$slug/manage");
+
 type BasicInfo = {
   name: string;
   price: string;
@@ -43,6 +50,10 @@ type FormStore = {
   setBasicInfo: (basicInfo: BasicInfo) => void;
   setStep: (step: FormStore["step"]) => void;
   reset: () => void;
+  foodId: string | null;
+  setFoodId: (foodId: string) => void;
+  ingredients: Ingredient[];
+  setIngredients: (ingredients: Ingredient[]) => void;
 };
 
 const useFormStore = create<FormStore>((set) => ({
@@ -56,9 +67,14 @@ const useFormStore = create<FormStore>((set) => ({
     set({
       step: "basicInfo",
       basicInfo: { name: "", price: "", description: "" },
+      ingredients: [],
     }),
+  foodId: null,
+  setFoodId: (foodId: string) => set({ foodId }),
   setBasicInfo: (basicInfo: BasicInfo) => set({ basicInfo }),
   setStep: (step: FormStore["step"]) => set({ step }),
+  ingredients: [],
+  setIngredients: (ingredients: Ingredient[]) => set({ ingredients }),
 }));
 
 const WizardStepOne = (props: { submitCallback: () => void }) => {
@@ -173,23 +189,66 @@ const WizardStepOne = (props: { submitCallback: () => void }) => {
   );
 };
 
-const WizardStepTwo = () => {
-  const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>(
-    [],
-  );
-  //   const setStep = useFormStore((s) => s.setStep);
+const WizardStepTwo = (props: { animationControls: AnimationControls }) => {
+  const params = routeApi.useParams();
+  const [
+    basicInfo,
+    setStep,
+    setFoodId,
+    selectedIngredients,
+    setSelectedIngredients,
+  ] = useFormStore((s) => [
+    s.basicInfo,
+    s.setStep,
+    s.setFoodId,
+    s.ingredients,
+    s.setIngredients,
+  ]);
 
   const [ingredients] = trpc.ingredients.getAll.useSuspenseQuery();
+  const createMutation = trpc.restaurant.menu.create.useMutation({
+    onSuccess: (data) => {
+      setFoodId(data.id);
+
+      props.animationControls.start({
+        x: "-10%",
+        opacity: 0,
+        transition: { duration: 0.1 },
+      });
+      setTimeout(() => setStep("picture"), 150);
+      setTimeout(
+        () =>
+          props.animationControls.start({
+            x: "0%",
+            opacity: 1,
+            transition: { duration: 0.015 },
+          }),
+        225,
+      );
+    },
+  });
+
+  const create = () => {
+    createMutation.mutate({
+      name: basicInfo.name,
+      price: parseFloat(basicInfo.price),
+      description: basicInfo.description,
+      ingredientIds: selectedIngredients.map((i) => ({
+        ingredientId: i.id,
+      })),
+      restaurantSlug: params.slug,
+    });
+  };
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-8">
-        <div>
-          <p className="text-lg font-medium">Add Ingredients</p>
-          <p className="text-sm text-neutral-500">
-            Add all the ingredients that are used in this dish
-          </p>
-        </div>
+      <div className="flex items-center justify-between gap-4">
+        <DrawerHeader>
+          <DrawerTitle>Add your ingredients</DrawerTitle>
+          <DrawerDescription>
+            Now, let's add some ingredients to your dish!
+          </DrawerDescription>
+        </DrawerHeader>
 
         <VaulDrawer.NestedRoot>
           <DrawerTrigger asChild>
@@ -199,11 +258,14 @@ const WizardStepTwo = () => {
           </DrawerTrigger>
           <DrawerPortal>
             <DrawerOverlay />
-            <DrawerContent>
+            <DrawerContent className="px-8 py-4">
               <DrawerHeader>
                 <DrawerTitle>Select Ingredients</DrawerTitle>
+                <DrawerDescription>
+                  Add all the ingredients in your dish
+                </DrawerDescription>
               </DrawerHeader>
-              <div className="px-8 py-4">
+              <div>
                 <ScrollArea className="flex h-72 flex-col ">
                   {ingredients.map((ingredient) => (
                     <div
@@ -213,7 +275,10 @@ const WizardStepTwo = () => {
                       <p>{ingredient.name}</p>
                       <Button
                         onClick={() =>
-                          setSelectedIngredients((cur) => [...cur, ingredient])
+                          setSelectedIngredients([
+                            ...selectedIngredients,
+                            ingredient,
+                          ])
                         }
                         disabled={selectedIngredients.includes(ingredient)}
                       >
@@ -229,6 +294,14 @@ const WizardStepTwo = () => {
       </div>
 
       <div className="my-4 flex flex-wrap gap-3">
+        {selectedIngredients.length === 0 && (
+          <div className="flex w-full flex-col items-center justify-center rounded-lg border-[0.0125rem] border-dashed border-neutral-300 px-4 py-8">
+            <p className="text-lg font-medium">No ingredients selected</p>
+            <p className="text-sm text-neutral-500">
+              Add some ingredients above!
+            </p>
+          </div>
+        )}
         {selectedIngredients.map((ingredient) => (
           <div
             key={ingredient.id}
@@ -240,13 +313,33 @@ const WizardStepTwo = () => {
       </div>
 
       <div className="flex gap-2 py-4">
-        <Button variant="secondary" className="flex-1 items-center gap-1">
+        <Button
+          variant="secondary"
+          className="flex-1 items-center gap-1"
+          onClick={() => {
+            props.animationControls.start({
+              x: "10%",
+              opacity: 0,
+              transition: { duration: 0.1 },
+            });
+            setTimeout(() => setStep("basicInfo"), 150);
+            setTimeout(
+              () =>
+                props.animationControls.start({
+                  x: "0%",
+                  opacity: 1,
+                  transition: { duration: 0.015 },
+                }),
+              225,
+            );
+          }}
+        >
           <span>
             <ChevronLeftIcon className="h-4 w-4" />
           </span>
           <span>Back</span>
         </Button>
-        <Button className="flex-1 items-center gap-1">
+        <Button className="flex-1 items-center gap-1" onClick={create}>
           <span>Next</span>
           <span>
             <ChevronRightIcon className="h-4 w-4" />
@@ -269,52 +362,50 @@ const CreateDishForm = () => {
   const [step, setStep] = useFormStore((s) => [s.step, s.setStep]);
   const animationControls = useAnimationControls();
 
-  //   if (step === "basicInfo") {
-  //     return (
-  //       <WizardStepOne
-  //         submitCallback={() => {
-  //           animationControls.start({
-  //             x: "-10%",
-  //             opacity: 0,
-  //             transition: { duration: 0.1 },
-  //           });
-  //           setTimeout(() => setStep("ingredients"), 150);
-  //         }}
-  //       />
-  //     );
-  //   }
-
-  //   if (step === "ingredients") {
-  //     return (
-  //       <Suspense>
-  //         <WizardStepTwo />
-  //       </Suspense>
-  //     );
-  //   }
-
-  //   if (step === "picture") {
-  //     return <WizardStepThree />;
-  //   }
-
   return (
     <motion.div animate={animationControls}>
       {step === "basicInfo" && (
-        <WizardStepOne
-          submitCallback={() => {
-            animationControls.start({
-              x: "-10%",
-              opacity: 0,
-              transition: { duration: 0.1 },
-            });
-            setTimeout(() => setStep("ingredients"), 150);
-          }}
-        />
+        <>
+          <DrawerHeader>
+            <DrawerTitle>Add a new dish</DrawerTitle>
+            <DrawerDescription>
+              Let's start by adding some of the basic info!
+            </DrawerDescription>
+          </DrawerHeader>
+          <WizardStepOne
+            submitCallback={() => {
+              animationControls.start({
+                x: "-10%",
+                opacity: 0,
+                transition: { duration: 0.1 },
+              });
+              setTimeout(() => setStep("ingredients"), 150);
+              setTimeout(
+                () =>
+                  animationControls.start({
+                    x: "0%",
+                    opacity: 1,
+                    transition: { duration: 0.015 },
+                  }),
+                225,
+              );
+            }}
+          />
+        </>
       )}
 
       {step === "ingredients" && (
-        <Suspense>
-          <WizardStepTwo />
-        </Suspense>
+        <>
+          {/* <DrawerHeader>
+            <DrawerTitle>Add a new dish</DrawerTitle>
+            <DrawerDescription>
+              Let's start by adding some of the basic info!
+            </DrawerDescription>
+          </DrawerHeader> */}
+          <Suspense>
+            <WizardStepTwo animationControls={animationControls} />
+          </Suspense>
+        </>
       )}
 
       {step === "picture" && <WizardStepThree />}
