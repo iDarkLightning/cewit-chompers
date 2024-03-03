@@ -18,6 +18,11 @@ model User {
   name             String
   email            String
   image            String
+  
+  hasOnboarded     Boolean        @default(false)
+  likes            String[]
+  dislikes         String[]
+
   sessions         Session[]
   oauthAccounts    OauthAccount[]
   ownedRestaurants Restaurant[]
