@@ -174,6 +174,7 @@ const WizardStepOne = (props: { submitCallback: () => void }) => {
 };
 
 const WizardStepTwo = () => {
+  console.log("hello there");
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>(
     [],
   );
